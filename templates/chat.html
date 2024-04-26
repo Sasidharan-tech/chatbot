@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+        .chat-box {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .user-message {
+            text-align: right;
+            color: #007bff;
+        }
+        .bot-message {
+            text-align: left;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Chatbot</h1>
+        <div class="chat-box" id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Type your message...">
+        <button onclick="send()">Send</button>
+    </div>
+
+    <script>
+        function send() {
+            var userInput = document.getElementById("user-input").value;
+           
+            User_message(userInput);
+            document.getElementById("user-input").value = "";
+            fetch("/res", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    message: userInput
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var botResponse = data.ans;
+                Bot_message(botResponse);
+            })
+            .catch(error => console.error("Error:", error));
+        }
+
+        function User_message(message) {
+            var chatBox = document.getElementById("chat-box");
+           
+            var user_msg = document.createElement("div");
+            
+            user_msg.classList.add("user-message");
+            user_msg.textContent = "You: " + message;
+            
+            chatBox.appendChild(user_msg);
+        }
+
+        function Bot_message(message) {
+            var chatBox = document.getElementById("chat-box");
+            var botMessage = document.createElement("div");
+            botMessage.classList.add("bot-message");
+            botMessage.textContent = "Bot: " + message;
+            chatBox.appendChild(botMessage);
+        }
+    </script>
+</body>
+</html>
